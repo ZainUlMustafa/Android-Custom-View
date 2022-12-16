@@ -1,9 +1,14 @@
 package com.sciengit.patterned_canvas;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -49,20 +54,32 @@ public class CustomView extends View {
         // acquiring the canvas height and width [depends on phone] and coloring it
         heightOfCanvas = canvas.getHeight();
         widthOfCanvas = canvas.getWidth();
-        canvas.drawColor(Color.BLACK);
+        canvas.drawColor(Color.LTGRAY);
 
         // creating a blue box
-        drawBlueBox(canvas);
+        float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
+        drawBlueBox(canvas, boxSize);
+        drawTilesWithBitmap(canvas, R.drawable.patch,50, boxSize);
     }
 
-    private void tileSymbols(int resourceId) {
+    private void drawTilesWithBitmap(Canvas canvas, int resourceId,int iconSize, float boxSize) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
+        bitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false);
+        paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        Shader mShader1 = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        paint.setShader(mShader1);
 
+        float top = (((float) heightOfCanvas) / 2) - (boxSize / 2);
+        float bottom = (((float) heightOfCanvas) / 2) + (boxSize / 2);
+        float left = (((float) widthOfCanvas) / 2) - (boxSize / 2);
+        float right = (((float) widthOfCanvas) / 2) + (boxSize / 2);
+        canvas.drawRect(left, top, right, bottom, paint);
     }
 
-    private void drawBlueBox(Canvas canvas) {
+    private void drawBlueBox(Canvas canvas, float boxSize) {
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.rgb(204, 255, 255));
-        float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
+
         float top = (((float) heightOfCanvas) / 2) - (boxSize / 2);
         float bottom = (((float) heightOfCanvas) / 2) + (boxSize / 2);
         float left = (((float) widthOfCanvas) / 2) - (boxSize / 2);
