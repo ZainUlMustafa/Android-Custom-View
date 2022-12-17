@@ -10,15 +10,22 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class CustomView extends View {
 
     private Paint paint;
+    private Paint bitmapPaint;
     private double heightOfCanvas;
     private double widthOfCanvas;
+
+    private static final String TAG = "CUST";
 
     public CustomView(Context context) {
         super(context);
@@ -57,9 +64,66 @@ public class CustomView extends View {
         canvas.drawColor(Color.LTGRAY);
 
         // creating a blue box
-        float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
-        drawBlueBox(canvas, boxSize);
-        drawTilesWithBitmap(canvas, R.drawable.patch,50, boxSize);
+        //float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
+        //drawBlueBox(canvas, boxSize);
+        //drawTilesWithBitmap(canvas, R.drawable.patch,50, boxSize);
+
+        float ltrb[] = {0,0, (float) widthOfCanvas, (float) heightOfCanvas};
+        drawBlueBox(canvas, ltrb);
+
+        int rows = 20;
+        int cols = 100;
+        float boxWidth = (float) (widthOfCanvas/rows);
+        float boxHeight = (float) (heightOfCanvas/cols);
+        Log.d(TAG, String.valueOf(heightOfCanvas));
+        Log.d(TAG, String.valueOf(widthOfCanvas));
+        Log.d(TAG, String.valueOf(boxHeight));
+        Log.d(TAG, String.valueOf(boxWidth));
+
+        for (int j=0; j<cols; ++j) {
+            for (int i = 0; i < rows; ++i) {
+                float lltrb[] = {boxWidth * i, boxHeight*j, (boxWidth * i) + boxWidth, (boxHeight*j)+boxHeight};
+                drawRedBox(canvas, lltrb);
+                int id = j%2==0?(i%2==0)?R.drawable.pothole: R.drawable.patch:(i%2==0)?R.drawable.patch: R.drawable.pothole;
+                drawTilesWithBitmap(canvas, id, 1, lltrb);
+            }
+        }
+    }
+
+    private void drawBlueBox(Canvas canvas, float ltrb[]) {
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.rgb(204, 255, 255));
+
+        float left= ltrb[0];
+        float top= ltrb[1];
+        float right= ltrb[2];
+        float bottom= ltrb[3];
+        canvas.drawRect(left, top, right, bottom, paint);
+    }
+
+    private void drawRedBox(Canvas canvas, float ltrb[]) {
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.rgb(204, 0, 0));
+
+        float left= ltrb[0];
+        float top= ltrb[1];
+        float right= ltrb[2];
+        float bottom= ltrb[3];
+        canvas.drawRect(left, top, right, bottom, paint);
+    }
+
+    private void drawTilesWithBitmap(Canvas canvas, int resourceId,int iconSize, float ltrb[]) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
+        bitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false);
+        bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        Shader mShader1 = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        bitmapPaint.setShader(mShader1);
+
+        float left= ltrb[0];
+        float top= ltrb[1];
+        float right= ltrb[2];
+        float bottom= ltrb[3];
+        canvas.drawRect(left, top, right, bottom, bitmapPaint);
     }
 
     private void drawTilesWithBitmap(Canvas canvas, int resourceId,int iconSize, float boxSize) {
