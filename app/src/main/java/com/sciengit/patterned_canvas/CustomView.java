@@ -64,30 +64,9 @@ public class CustomView extends View {
         canvas.drawColor(Color.LTGRAY);
 
         // creating a blue box
-        //float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
-        //drawBlueBox(canvas, boxSize);
-        //drawTilesWithBitmap(canvas, R.drawable.patch,50, boxSize);
-
-        float ltrb[] = {0,0, (float) widthOfCanvas, (float) heightOfCanvas};
-        drawBlueBox(canvas, ltrb);
-
-        int rows = 20;
-        int cols = 100;
-        float boxWidth = (float) (widthOfCanvas/rows);
-        float boxHeight = (float) (heightOfCanvas/cols);
-        Log.d(TAG, String.valueOf(heightOfCanvas));
-        Log.d(TAG, String.valueOf(widthOfCanvas));
-        Log.d(TAG, String.valueOf(boxHeight));
-        Log.d(TAG, String.valueOf(boxWidth));
-
-        for (int j=0; j<cols; ++j) {
-            for (int i = 0; i < rows; ++i) {
-                float lltrb[] = {boxWidth * i, boxHeight*j, (boxWidth * i) + boxWidth, (boxHeight*j)+boxHeight};
-                drawRedBox(canvas, lltrb);
-                int id = j%2==0?(i%2==0)?R.drawable.pothole: R.drawable.patch:(i%2==0)?R.drawable.patch: R.drawable.pothole;
-                drawTilesWithBitmap(canvas, id, 1, lltrb);
-            }
-        }
+        float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
+        drawBlueBox(canvas, boxSize);
+        drawTilesWithBitmap(canvas, R.drawable.pothole, 10, 10, boxSize);
     }
 
     private void drawBlueBox(Canvas canvas, float ltrb[]) {
@@ -129,6 +108,20 @@ public class CustomView extends View {
     private void drawTilesWithBitmap(Canvas canvas, int resourceId,int iconSize, float boxSize) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
         bitmap = Bitmap.createScaledBitmap(bitmap, iconSize, iconSize, false);
+        paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        Shader mShader1 = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+        paint.setShader(mShader1);
+
+        float top = (((float) heightOfCanvas) / 2) - (boxSize / 2);
+        float bottom = (((float) heightOfCanvas) / 2) + (boxSize / 2);
+        float left = (((float) widthOfCanvas) / 2) - (boxSize / 2);
+        float right = (((float) widthOfCanvas) / 2) + (boxSize / 2);
+        canvas.drawRect(left, top, right, bottom, paint);
+    }
+
+    private void drawTilesWithBitmap(Canvas canvas, int resourceId,int iconWidth, int iconHeight, float boxSize) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId);
+        bitmap = Bitmap.createScaledBitmap(bitmap, iconWidth, iconHeight, false);
         paint = new Paint(Paint.FILTER_BITMAP_FLAG);
         Shader mShader1 = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
         paint.setShader(mShader1);
