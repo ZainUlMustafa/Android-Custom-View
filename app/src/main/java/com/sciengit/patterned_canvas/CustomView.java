@@ -66,7 +66,7 @@ public class CustomView extends View {
         // creating a blue box
         float boxSize = widthOfCanvas >= 1000 ? 1000 : 500;
         drawBlueBox(canvas, boxSize);
-        drawTilesWithBitmap(canvas, R.drawable.pothole, 10, 10, boxSize);
+        drawTilesWithBitmap(canvas, R.drawable.patch, 50, boxSize);
     }
 
     private void drawBlueBox(Canvas canvas, float ltrb[]) {
